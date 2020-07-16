@@ -24,17 +24,23 @@ public class ConectorJms {
 		cf = (ConnectionFactory)context.lookup("ConnectionFactory");
 		conexao = cf.createConnection();
 	}
-	public MessageProducer iniciaProducer(String nomeDestino) throws Exception {	
-		Destination destino = iniciaConexaoParaUmDestino(nomeDestino);
+	
+	public MessageProducer iniciaProducer(String nomeDestino,TipoSessao sessao) throws Exception {	
+		Destination destino = iniciaConexaoParaUmDestino(nomeDestino,sessao);
 		return session.createProducer(destino);
 	}
 	
-	private Destination iniciaConexaoParaUmDestino(String nomeDestino) throws JMSException, NamingException {
+	private Destination iniciaConexaoParaUmDestino(String nomeDestino,TipoSessao sessao) throws JMSException, NamingException {
 		conexao.start();
 		
-		session = conexao.createSession(false, Session.AUTO_ACKNOWLEDGE);
-		Destination destino = (Destination) context.lookup(nomeDestino);
-		return destino;
+		session = criaSessao(sessao);
+		
+		return (Destination) context.lookup(nomeDestino);
+	}
+	
+	private Session criaSessao(TipoSessao tipoSessao) throws JMSException {
+		
+		return tipoSessao.criaSessao(conexao); 
 	}	
 	
 	public void encerraConeccao() throws Exception{
@@ -51,5 +57,10 @@ public class ConectorJms {
 		Destination destino = iniciaConexaoParaUmDestino(nomeDestino);
 		return session.createConsumer(destino);
 	}
+	public void setClientId(String clientId) throws JMSException {
+		conexao.setClientID(clientId);
+		
+	}
+
 
 }

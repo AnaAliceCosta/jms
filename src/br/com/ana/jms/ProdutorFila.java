@@ -9,7 +9,7 @@ public class ProdutorFila {
 		
 		
 		ConectorJms conector = new ConectorJms();
-		MessageProducer fila = conector.iniciaProducer("financeiro");
+		MessageProducer fila = conector.iniciaProducer("financeiro", new SessaoFila());
 
 		Message mensagem = conector.criaMensagemDeTexto("<mensagem>oi</mensagem>");
 		fila.send(mensagem);
